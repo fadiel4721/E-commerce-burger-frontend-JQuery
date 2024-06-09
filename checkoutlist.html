@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Checkout List</title>
+    <!-- Include necessary CSS libraries -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
+    <style>
+            /* Custom styles for this template */
+            body {
+            padding-top: 56px; /* Adjust based on the height of the fixed navbar */
+        }
+        .card {
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
+        <div class="container">
+            <a class="navbar-brand" href="#">Customer Dashboard</a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ml-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="detail_product.html">Products</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="cart.html">Cart</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="checkoutlist.html">Checkout</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" id="logout">Logout</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+    <div class="container mt-5">
+        <h1>Checkout List</h1>
+        <div id="checkoutList">
+            <!-- Checkout items will be displayed here -->
+        </div>
+        <div id="dataResult"></div> <!-- Display API request results -->
+    </div>
+
+    <!-- Include necessary JavaScript libraries -->
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            // Function to retrieve token from localStorage
+            function getToken() {
+                return localStorage.getItem('token');
+            }
+
+            // Function to retrieve id_customer from localStorage
+            function getCustomerId() {
+                return localStorage.getItem('id_customer');
+            }
+
+            // URL for API endpoint to get checkout data
+            var checkoutUrl = 'http://127.0.0.1:8000/api/checkout';
+
+            // Function to handle API request errors
+            function handleError(jqXHR, textStatus, errorThrown) {
+                console.error('Error: ' + textStatus, errorThrown);
+                $('#dataResult').text('Error: ' + textStatus + ' ' + errorThrown);
+            }
+
+            // Function to fetch and display checkout data
+            function fetchAndDisplayCheckoutData(token, customerId) {
+                $.ajax({
+                    url: checkoutUrl + '?id_customer=' + customerId,
+                    type: 'GET',
+                    headers: {
+                        'Authorization': 'Bearer ' + token
+                    },
+                    dataType: 'json',
+                    success: function(response) {
+                        if (response.success) {
+                            var checkoutList = response.data.checkout;
+                            $('#checkoutList').empty(); // Clear existing checkout items
+
+                            $.each(checkoutList, function(index, checkout) {
+                                var customerName = checkout.customer ? checkout.customer.id_customer : 'name';
+                                var totalPembayaran = checkout.total_pembayaran;
+
+                                var checkoutHtml = '<div class="card mb-3">' +
+                                    '<div class="card-body">' +
+                                    '<h5 class="card-title">Checkout ID: ' + checkout.id_checkout + '</h5>' +
+                                    // '<p class="card-text">Customer: ' + customerName + '</p>' +
+                                    '<p class="card-text">Metode Pembayaran: ' + checkout.metode_bayar + '</p>' +
+                                    '<p class="card-text">Metode Pengiriman: ' + checkout.metode_kirim + '</p>' +
+                                    '<p class="card-text">Alamat Pengiriman: ' + checkout.alamat + '</p>' +
+                                    '<p class="card-text">Total Pembayaran: ' + totalPembayaran + '</p>' +
+                                    '</div>' +
+                                    '</div>';
+
+                                $('#checkoutList').append(checkoutHtml);
+                            });
+                        } else {
+                            $('#dataResult').text('Failed to fetch checkout data.');
+                        }
+                    },
+                    error: handleError
+                });
+            }
+
+            // Fetch and display checkout data on page load
+            var token = getToken();
+            var customerId = getCustomerId();
+            fetchAndDisplayCheckoutData(token, customerId);
+        });
+    </script>
+    <script>
+     $(document).ready(function() {
+        // Function to retrieve token from localStorage
+        function getToken() {
+            return localStorage.getItem('token');
+        }
+        
+        // Function to handle logout
+        $('#logout').click(function(event) {
+            event.preventDefault(); // Prevent default link behavior
+            
+            // Ask for confirmation before logging out
+            var confirmLogout = confirm('Are you sure you want to logout?');
+            
+            if (confirmLogout) {
+                var token = getToken();
+                
+                // Remove token from localStorage
+                localStorage.removeItem('token');
+                
+                // Redirect to login page
+                window.location.href = 'login.html';
+            }
+        });
+        
+        
+    });
+    </script>
+</body>
+</html>

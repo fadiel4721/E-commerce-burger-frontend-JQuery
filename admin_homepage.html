@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/feather-icons/4.28.0/feather.min.css"> <!-- Feather Icons -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <meta name="csrf-token" content="{{ csrf_token() }}"> <!-- CSRF token for Laravel -->
+    <style>
+        body {
+            background-color: #f7f7f7;
+        }
+        .product-card {
+            border: 1px solid #e1e1e1;
+            border-radius: 10px;
+            overflow: hidden;
+            background: #fff;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+        .product-card img {
+            max-width: 100%;
+            height: auto;
+            object-fit: cover;
+        }
+        .product-info {
+            padding: 15px;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+        .product-title {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        .product-price {
+            color: #ff0000;
+            font-size: 16px;
+        }
+        .product-cart {
+            font-size: 24px;
+            color: #28a745; /* Green color for cart icon */
+            cursor: pointer;
+            align-self: flex-end; /* Align icon to the right */
+        }
+        .category-section {
+            margin-bottom: 30px;
+        }
+        .add-product-button {
+            position: relative;
+            top: -1200px;
+            right: -1150px;
+            z-index: 1200; /* Set z-index to make sure it's above other elements */
+        }
+        .add-category-button {
+            position: relative;
+            top: -1100px;
+            right: -1150px;
+            z-index: 1600; /* Set z-index to make sure it's above other elements */
+        }
+        .add-ukuran-button {
+            position: relative;
+            top: -1000px;
+            right: -1150px;
+            z-index: 1500; /* Set z-index to make sure it's above other elements */
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
+        <div class="container">
+            <a class="navbar-brand" href="#">Admin Dashboard</a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ml-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" id="fetchProducts">Products</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" id="fetchCategories">Categories</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" id="fetchSizes">Sizes</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" id="logout">Logout</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mt-5">
+        <h1 class="mb-4">Admin Management</h1>
+        
+        <div id="dataResult" class="row">
+            <!-- Product cards will be inserted here -->
+        </div>
+        <div class="container mt-5">
+        </div>
+        <div class="add-product-button">
+            <a href="form_product.html" class="btn btn-primary">Tambah Product</a>
+        </div>
+        <div class="add-category-button">
+            <a href="form_category.html" class="btn btn-primary">Tambah Category</a>
+        </div>
+        <div class="add-ukuran-button">
+            <a href="form_ukuran.html" class="btn btn-primary">Tambah Ukuran</a>
+        </div>
+    <script>
+    $(document).ready(function() {
+        // Function to retrieve token from localStorage
+        function getToken() {
+            return localStorage.getItem('token');
+        }
+        
+        // Function to handle logout
+        $('#logout').click(function(event) {
+            event.preventDefault(); // Prevent default link behavior
+            
+            // Ask for confirmation before logging out
+            var confirmLogout = confirm('Are you sure you want to logout?');
+            
+            if (confirmLogout) {
+                var token = getToken();
+                
+                // Remove token from localStorage
+                localStorage.removeItem('token');
+                
+                // Redirect to login page
+                window.location.href = 'login.html';
+            }
+        });
+
+    
+    });
+    </script>
+
+    <script src="product_manajemen.js"></script>
+    <script src="category_manajemen.js"></script>
+    <script src="manajemen_size.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/feather-icons/4.28.0/feather.min.js"></script> <!-- Feather Icons -->
+</body>
+</html>

@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Category</title>
+</head>
+<body>
+    <div class="container">
+        <h1>Edit Category</h1>
+        <form id="updateCategoryForm">
+            <label for="categoryName">Category Name:</label>
+            <input type="text" id="categoryName" name="categoryName">
+            <button type="submit">Update Category</button>
+        </form>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script>
+       $(document).ready(function() {
+    // Function to retrieve token from localStorage
+    function getToken() {
+        return localStorage.getItem('token');
+    }
+
+    // Function to retrieve category ID from query parameter
+    function getCategoryID() {
+        var urlParams = new URLSearchParams(window.location.search);
+        return urlParams.get('id');
+    }
+
+    // Function to fetch category details for editing
+    function fetchCategoryDetails(categoryId, token) {
+        var categoryUrl = 'http://127.0.0.1:8000/api/admin/categories'; // Update with your API endpoint
+        $.ajax({
+            url: categoryUrl + '/' + categoryId,
+            type: 'GET',
+            headers: {
+                'Authorization': 'Bearer ' + token
+            },
+            dataType: 'json',
+            success: function(response) {
+                if (response.success) {
+                    var category = response.data;
+                    // Update UI with category details for editing
+                    $('#categoryName').val(category.nama_category); // Update input field with category name
+                } else {
+                    console.error('Failed to fetch category details:', response.message);
+                    // Handle error scenario
+                }
+            },
+            error: function(xhr, status, error) {
+                console.error('Failed to fetch category details:', error);
+                // Handle error scenario
+            }
+        });
+    }
+
+    // Fetch and display category details on page load
+    var token = getToken();
+    var categoryId = getCategoryID();
+    fetchCategoryDetails(categoryId, token);
+
+    // Function to handle form submission for category update
+    $('#updateCategoryForm').submit(function(event) {
+        event.preventDefault();
+        var updatedCategoryName = $('#categoryName').val();
+
+        // Perform validation if necessary
+
+        var data = {
+            nama_category: updatedCategoryName
+        };
+
+        var categoryUrl = 'http://127.0.0.1:8000/api/admin/categories'; // Update with your API endpoint
+        $.ajax({
+            url: categoryUrl + '/' + categoryId,
+            type: 'POST',
+            headers: {
+                'Authorization': 'Bearer ' + token,
+                'Content-Type': 'application/json'
+            },
+            data: JSON.stringify(data),
+            success: function(response) {
+                if (response.success) {
+                    alert('Category updated successfully!');
+                    // Redirect to categories list or perform necessary actions
+                    window.location.href = 'admin_homepage.html'; // Example: Redirect to categories list page
+                } else {
+                    console.error('Failed to update category:', response.message);
+                    // Handle error scenario
+                }
+            },
+            error: function(xhr, status, error) {
+                console.error('Failed to update category:', error);
+                // Handle error scenario
+            }
+        });
+    });
+});
+    </script>
+</body>
+</html>

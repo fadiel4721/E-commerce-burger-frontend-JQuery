@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Size</title>
+</head>
+<body>
+    <div class="container">
+        <h1>Edit Size</h1>
+        <form id="updateSizeForm">
+            <label for="sizeName">Size Name:</label>
+            <input type="text" id="sizeName" name="sizeName">
+            <button type="submit">Update Size</button>
+        </form>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script>
+       $(document).ready(function() {
+    // Function to retrieve token from localStorage
+    function getToken() {
+        return localStorage.getItem('token');
+    }
+
+    // Function to retrieve size ID from query parameter
+    function getSizeID() {
+        var urlParams = new URLSearchParams(window.location.search);
+        return urlParams.get('id');
+    }
+
+    // Function to fetch size details for editing
+    function fetchSizeDetails(sizeId, token) {
+        var sizeUrl = 'http://127.0.0.1:8000/api/admin/ukuran'; // Update with your API endpoint for sizes
+        $.ajax({
+            url: sizeUrl + '/' + sizeId,
+            type: 'GET',
+            headers: {
+                'Authorization': 'Bearer ' + token
+            },
+            dataType: 'json',
+            success: function(response) {
+                if (response.success) {
+                    var size = response.data;
+                    // Update UI with size details for editing
+                    $('#sizeName').val(ukuran.ukuran); // Update input field with ukuran name
+                } else {
+                    console.error('Failed to fetch ukuran details:', response.message);
+                    // Handle error scenario
+                }
+            },
+            error: function(xhr, status, error) {
+                console.error('Failed to fetch ukuran details:', error);
+                // Handle error scenario
+            }
+        });
+    }
+
+    // Fetch and display ukuran details on page load
+    var token = getToken();
+    var sizeId = getSizeID();
+    fetchSizeDetails(sizeId, token);
+
+    // Function to handle form submission for size update
+    $('#updateSizeForm').submit(function(event) {
+        event.preventDefault();
+        var updatedSizeName = $('#sizeName').val();
+
+        // Perform validation if necessary
+
+        var data = {
+            ukuran: updatedSizeName
+        };
+
+        var sizeUrl = 'http://127.0.0.1:8000/api/admin/ukuran'; // Update with your API endpoint for sizes
+        $.ajax({
+            url: sizeUrl + '/' + sizeId,
+            type: 'POST',
+            headers: {
+                'Authorization': 'Bearer ' + token,
+                'Content-Type': 'application/json'
+            },
+            data: JSON.stringify(data),
+            success: function(response) {
+                if (response.success) {
+                    alert('Size updated successfully!');
+                    // Redirect to sizes list or perform necessary actions
+                    window.location.href = 'admin_homepage.html'; // Example: Redirect to admin homepage
+                } else {
+                    console.error('Failed to update size:', response.message);
+                    // Handle error scenario
+                }
+            },
+            error: function(xhr, status, error) {
+                console.error('Failed to update size:', error);
+                // Handle error scenario
+            }
+        });
+    });
+});
+    </script>
+</body>
+</html>
